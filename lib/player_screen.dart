@@ -494,6 +494,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       );
       if (!mounted || _closed) return;
       final supported = status?['supported'] == true;
+      final granted = status?['granted'] != false;
       final active = status?['active'] == true;
       final requested = status?['requested'] == true;
       _setPictureInPictureStatus(
@@ -501,8 +502,10 @@ class _PlayerScreenState extends State<PlayerScreen>
         active: active,
         requested: requested && !active,
       );
-      if (!supported || (!active && !requested)) {
+      if (!supported && !active && !requested) {
         _notice('当前设备不支持画中画');
+      } else if (!granted && !active && !requested) {
+        _notice('系统已禁用画中画，请在 设置 > 应用 > 画中画 中允许');
       } else if (requested && !active) {
         _pictureInPictureExitTimer?.cancel();
         _pictureInPictureExitTimer = Timer(const Duration(seconds: 2), () {
